@@ -55,7 +55,7 @@ details{border-top:1px solid #eee;padding:8px 0}summary{font-weight:600;display:
 <div id="splash"><img src="icon-192.png" alt=""><h1>Amiibo Smash</h1><p id="spv"></p></div>
 <div id="app"></div>
 <script>
-const VERSION='beta 0.5';
+const VERSION='beta 0.6';
 const KEY='amiibo-smash-data',LKEY='amiibo-smash-list';
 const PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 70"><ellipse cx="30" cy="64" rx="22" ry="5" fill="#ccc"/><circle cx="30" cy="16" r="11" fill="#a9a9ba"/><rect x="18" y="28" width="24" height="30" rx="9" fill="#bdbdcc"/></svg>');
 let data={owned:{},photos:{}};
@@ -76,7 +76,7 @@ const IC={
  lockC:'<rect x="5" y="11" width="14" height="10" rx="2" fill="#c8202a"/><path d="M8 11V8a4 4 0 018 0v3" fill="none" stroke="#c8202a" stroke-width="2.4"/>',
  lockO:'<rect x="5" y="11" width="14" height="10" rx="2" fill="#1a9a4a"/><path d="M8 11V8a4 4 0 017.5-2" fill="none" stroke="#1a9a4a" stroke-width="2.4"/>',
  chk:'<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'};
-const PAL={bronce:['#c27a45','#8a4f26','#e7b184','#c8202a'],plata:['#b4bcc8','#7d8695','#e2e7ee','#c8202a'],oro:['#e8b21a','#a97b05','#fbe083','#c8202a'],platino:['#58c1d6','#2c8497','#aee6f1','#c8202a'],final:['#c8202a','#7d0f17','#ff8a92','#e8b21a'],gris:['#c9c9d3','#a9a9b6','#dcdce3','#b9b9c6']};
+const PAL={bronce:['#c27a45','#8a4f26','#e7b184','#c8202a'],plata:['#b4bcc8','#7d8695','#e2e7ee','#c8202a'],oro:['#e8b21a','#a97b05','#fbe083','#c8202a'],platino:['#58c1d6','#2c8497','#aee6f1','#c8202a'],final:['#c8202a','#7d0f17','#ff8a92','#e8b21a'],esmeralda:['#2fb06a','#1c7a46','#9be3bb','#c8202a'],amatista:['#8e5bd6','#5e34a3','#cbb0f2','#c8202a'],supremo:['#33333d','#e8b21a','#ffd84d','#e8b21a'],gris:['#c9c9d3','#a9a9b6','#dcdce3','#b9b9c6']};
 function starPts(cx,cy,r){let p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;p.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1))}return p.join(' ')}
 function medalSvg(num,pal,star){const[m,d,l,r]=pal;return `<svg viewBox="0 0 300 345" aria-hidden="true"><path d="M95 10L150 120L110 150L60 50Z" fill="${r}"/><path d="M205 10L150 120L190 150L240 50Z" fill="${r}" opacity=".85"/><circle cx="150" cy="225" r="112" fill="${d}"/><circle cx="150" cy="225" r="100" fill="${m}"/><circle cx="150" cy="225" r="82" fill="none" stroke="${l}" stroke-width="6" stroke-dasharray="3 9" stroke-linecap="round"/><circle cx="150" cy="225" r="68" fill="${l}" opacity=".45"/>${star?`<polygon points="${starPts(150,225,56)}" fill="#fff"/>`:`<text x="150" y="248" text-anchor="middle" font-family="Arial" font-weight="800" font-size="${String(num).length>2?54:62}" fill="#fff" stroke="${d}" stroke-width="2">${num}</text>`}</svg>`}
 const svg=(n,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24">${IC[n]}</svg>`;
@@ -124,8 +124,8 @@ function vLista(){
 function vProg(){
   const s=stats(list),col=pc(s.p);
   const owned=list.filter(x=>have(x.id)).map(x=>({...x,d:data.owned[x.id].date||''})).sort((a,b)=>a.d<b.d?-1:1);
-  const T=[[10,'bronce','Bronce'],[25,'plata','Plata'],[50,'oro','Oro'],[75,'platino','Platino']].filter(x=>x[0]<s.t);T.push([s.t,'final','Colección completa']);
-  const meds=T.map(([n,k,nm])=>{const ok=s.o>=n&&n>0,d=ok?owned[n-1]?.d:'';return `<div class="med">${medalSvg(n,ok?PAL[k]:PAL.gris,k==='final'&&ok)}<strong>${nm}${k==='final'?'':' · '+n}</strong>${ok?fdate(d):'Pendiente'}</div>`}).join('');
+  const T=[[10,'bronce','Luchador novato'],[25,'plata','Retador'],[50,'oro','Finalista'],[75,'platino','Campeón'],[100,'esmeralda','Leyenda'],[125,'amatista','Mito'],[150,'supremo','Smash supremo']].filter(x=>x[0]<s.t);T.push([s.t,'final','Master Hand']);
+  const meds=T.map(([n,k,nm])=>{const ok=s.o>=n&&n>0,d=ok?owned[n-1]?.d:'';return `<div class="med">${medalSvg(n,ok?PAL[k]:PAL.gris,k==='final'&&ok)}<strong>${nm}</strong>${k==='final'?'Colección completa':n+' amiibo'}<br>${ok?fdate(d):'Pendiente'}</div>`}).join('');
   const yrs={};owned.forEach(x=>{const[y,m]=(x.d||'0000-00').split('-');((yrs[y]??={})[m]??=[]).push(x)});
   const hist=Object.keys(yrs).sort().reverse().map(y=>`<details><summary><span>${y==='0000'?'Sin fecha':y}</span><b>${Object.values(yrs[y]).flat().length}</b></summary>${Object.keys(yrs[y]).sort().reverse().map(m=>`<details style="margin-left:10px"><summary><span>${m==='00'?'—':MES[+m-1]}</span><b>${yrs[y][m].length}</b></summary>${yrs[y][m].map(x=>`<div class="li"><span>N.º ${x.n} ${esc(x.name)}</span><span>${fdate(x.d)}</span></div>`).join('')}</details>`).join('')}</details>`).join('')||'<div class="muted">Aún no marcas ningún amiibo.</div>';
   return `<div class="card"><div class="ct">${svg('chart',18)}Mi progreso</div><div class="row" style="margin-bottom:8px"><div class="big" style="color:${col}">${s.p}%</div><div class="muted">${s.o} de ${s.t}</div></div><div class="bar"><i style="width:${s.p}%;background:${col}"></i></div></div>
