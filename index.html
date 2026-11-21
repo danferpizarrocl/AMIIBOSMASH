@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Amiibo Smash</title>
+<meta name="theme-color" content="#c8202a">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;background:#f3f3f7;color:#1d1d22;padding-bottom:84px}
+.top{background:#c8202a;color:#fff;padding:18px 16px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+.top h1{font-size:22px;font-weight:800}.top small{opacity:.85;font-size:12px}
+.lockbtn{width:58px;height:58px;border-radius:18px;background:#fff;border:0;display:flex;align-items:center;justify-content:center}
+.editbar{background:#1a9a4a;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:600}
+.editbar button{background:#fff;color:#1a9a4a;border:0;border-radius:10px;padding:8px 12px;font-weight:700;font-size:13px}
+.wrap{max-width:900px;margin:0 auto}
+.card{background:#fff;border-radius:16px;margin:12px 14px;padding:14px;box-shadow:0 1px 4px #0002}
+.ct{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;padding-bottom:6px;border-bottom:2px solid #1d1d22;margin-bottom:12px;width:max-content;max-width:100%}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.big{font-size:34px;font-weight:800}
+.bar{height:10px;background:#e3e3ea;border-radius:6px;overflow:hidden}.bar i{display:block;height:100%}
+.sel,.inp{width:100%;border:1.5px solid #c9c9d3;border-radius:12px;padding:11px 12px;font-size:15px;background:#fff;color:#1d1d22}
+.ctl{padding:0 14px;max-width:900px;margin:0 auto}
+.chips{display:flex;gap:8px;margin:10px 0}
+.chip{padding:9px 14px;border-radius:20px;background:#e5e5ec;font-weight:600;font-size:14px;border:0;color:#1d1d22}
+.chip.on{background:#c8202a;color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;padding:0 14px;max-width:900px;margin:0 auto}
+.am{background:#fff;border-radius:14px;padding:8px 6px 10px;text-align:center;box-shadow:0 1px 3px #0002;position:relative;user-select:none}
+.am.no{opacity:.55}
+.am img{width:100%;height:84px;object-fit:contain}
+.am .n{font-size:11px;color:#6b6b78;margin-top:2px}
+.am .nm{font-size:12px;font-weight:700;line-height:1.15}
+.ok{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#1a9a4a;display:flex;align-items:center;justify-content:center}
+.info{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:50%;background:#e5e5ec;border:0;font-weight:800;font-size:12px;color:#444}
+.tabs{position:fixed;bottom:0;left:0;right:0;height:68px;background:#fff;border-top:1px solid #ddd;display:flex;z-index:6}
+.tabs button{flex:1;border:0;background:none;font-size:12px;color:#6b6b78;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.tabs .on{color:#c8202a;font-weight:700}
+.med{width:25%;text-align:center;font-size:11px;color:#6b6b78}
+.med b{display:flex;width:52px;height:52px;border-radius:50%;margin:0 auto 4px;align-items:center;justify-content:center;font-size:14px;color:#fff;background:#c9c9d3}
+.med b.g{background:#e0a812}
+.modal{position:fixed;inset:0;background:#000a;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px}
+.box{background:#fff;border-radius:20px;padding:18px;width:100%;max-width:420px;max-height:92vh;overflow:auto;position:relative}
+.box h2{font-size:19px;margin-bottom:8px}
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:700;margin-top:8px;background:#c8202a;color:#fff;text-align:center;text-decoration:none}
+.btn.alt{background:#e5e5ec;color:#1d1d22}
+.x{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:0;background:#e5e5ec;font-size:18px;font-weight:800}
+.big-img{width:100%;height:240px;object-fit:contain;background:#f6f6f9;border-radius:14px}
+.muted{color:#6b6b78;font-size:13px}
+details{border-top:1px solid #eee;padding:8px 0}summary{font-weight:600;display:flex;justify-content:space-between;cursor:pointer}
+.li{display:flex;justify-content:space-between;font-size:13px;padding:4px 0 4px 12px;color:#444}
+.err{color:#b00020;font-size:14px}
+#splash{position:fixed;inset:0;background:#c8202a;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;transition:opacity .4s}#splash img{width:140px;height:140px;border-radius:30px}#splash h1{margin-top:18px;font-size:28px}#splash p{opacity:.85;margin-top:6px}
+</style></head><body>
+<div id="splash"><img src="icon-192.png" alt=""><h1>Amiibo Smash</h1><p id="spv"></p></div>
+<div id="app"></div>
+<script>
+const VERSION='beta 0.2';
+const KEY='amiibo-smash-data',LKEY='amiibo-smash-list';
+const PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 70"><ellipse cx="30" cy="64" rx="22" ry="5" fill="#ccc"/><circle cx="30" cy="16" r="11" fill="#a9a9ba"/><rect x="18" y="28" width="24" height="30" rx="9" fill="#bdbdcc"/></svg>');
+let data={owned:{},photos:{}};
+try{data=Object.assign(data,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+let errMsg='',list=[],status='loading',tab='lista',unlocked=false,modal=null,f={saga:'',mode:'all',q:''},lastTap={};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){alert('No hay espacio para guardar (fotos muy pesadas).')}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const fdate=d=>{if(!d)return'';const[y,m,dd]=d.split('-');return `${+dd} ${MES[m-1].slice(0,3).toLowerCase()} ${y}`};
+const pc=p=>p>=90?'#d32f2f':p>=75?'#e8590c':p>=50?'#d99a00':p>=25?'#2f9e44':'#1f6fe0';
+const IC={
+ list:'<path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/>',
+ chart:'<path d="M5 20V10m7 10V4m7 16v-7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/>',
+ medal:'<circle cx="12" cy="9" r="5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M9 14l-2 7 5-3 5 3-2-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
+ cal:'<rect x="4" y="5" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4 10h16M9 3v4M15 3v4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
+ save:'<path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
+ lockC:'<rect x="5" y="11" width="14" height="10" rx="2" fill="#c8202a"/><path d="M8 11V8a4 4 0 018 0v3" fill="none" stroke="#c8202a" stroke-width="2.4"/>',
+ lockO:'<rect x="5" y="11" width="14" height="10" rx="2" fill="#1a9a4a"/><path d="M8 11V8a4 4 0 017.5-2" fill="none" stroke="#1a9a4a" stroke-width="2.4"/>',
+ chk:'<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'};
+const svg=(n,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24">${IC[n]}</svg>`;
+
+/* ---------- Datos ---------- */
+function normalize(raw){
+  let a=raw.filter(x=>!x.type||x.type==='Figure').map(x=>({id:x.head+x.tail,name:x.name,saga:x.gameSeries||'Otras',img:x.image,rel:(x.release&&(x.release.na||x.release.eu||x.release.jp||x.release.au))||''}));
+  a.sort((p,q)=>p.id<q.id?-1:1);
+  const gw=a.filter(x=>/game\s*&\s*watch/i.test(x.name));
+  if(gw.length===1){
+    const g=gw[0],i=a.indexOf(g);
+    const v=[0,1,2,3].map(k=>({...g,id:g.id+'-v'+k,variant:k,name:k?g.name+' · Variante '+k:g.name}));
+    a.splice(i,1,...v);
+  }
+  return a.map((x,i)=>({...x,n:i+1}));
+}
+async function load(){
+  status='loading';render();
+  try{
+    const r=await fetch('https://www.amiiboapi.com/api/amiibo/?amiiboSeries=Super%20Smash%20Bros.');
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    list=normalize(j.amiibo);
+    try{localStorage.setItem(LKEY,JSON.stringify(j.amiibo))}catch(e){}
+    status='ok';
+  }catch(e){
+    errMsg=String(e&&e.message||e);
+    try{const c=JSON.parse(localStorage.getItem(LKEY)||'null');if(c){list=normalize(c);status='cache';render();return}}catch(_){}
+    status='error';
+  }
+  render();
+}
+
+/* ---------- Helpers ---------- */
+const have=id=>!!data.owned[id];
+const imgOf=a=>data.photos[a.id]||a.img;
+const sagas=()=>[...new Set(list.map(x=>x.saga))].sort();
+function stats(arr){const t=arr.length,o=arr.filter(x=>have(x.id)).length;return{t,o,p:t?Math.round(o/t*100):0}}
+function toggle(id){if(have(id))delete data.owned[id];else data.owned[id]={date:today()};save()}
+function card(a){
+  const o=have(a.id);
+  return `<div class="am ${o?'':'no'}" data-act="card" data-id="${a.id}">
+  ${o?`<div class="ok">${svg('chk',14)}</div>`:''}
+  ${unlocked?`<button class="info" data-act="info" data-id="${a.id}">i</button>`:''}
+  <img loading="lazy" src="${esc(imgOf(a))}" onerror="this.onerror=null;this.src='${PH}'" alt="">
+  <div class="n">N.º ${a.n}${a.variant?' · V'+a.variant:''}</div><div class="nm">${esc(a.name)}</div></div>`;
+}
+
+/* ---------- Vistas ---------- */
+function vLista(){
+  const s=stats(list),sel=list.filter(x=>(!f.saga||x.saga===f.saga)&&(f.mode==='all'||(f.mode==='have')===have(x.id))&&(!f.q||x.name.toLowerCase().includes(f.q.toLowerCase())));
+  const sc=stats(f.saga?list.filter(x=>x.saga===f.saga):list),col=f.saga?pc(sc.p):'#1f6fe0';
+  return `<div class="card"><div class="row"><div><div class="muted">Capturados</div><div class="big" style="color:${col}">${sc.o} <span style="font-size:18px;color:#6b6b78;font-weight:600">de ${sc.t}</span></div></div><div class="big" style="color:${col}">${sc.p}%</div></div></div>
+  <div class="ctl"><select class="sel" data-act="saga"><option value="">Todas las sagas</option>${sagas().map(g=>`<option ${f.saga===g?'selected':''} value="${esc(g)}">${esc(g)}</option>`).join('')}</select>
+  <input class="inp" style="margin-top:10px" placeholder="Buscar por nombre" value="${esc(f.q)}" data-act="q">
+  <div class="chips">${[['all','Todos'],['have','Los tengo'],['miss','Me faltan']].map(([k,l])=>`<button class="chip ${f.mode===k?'on':''}" data-act="mode" data-v="${k}">${l}</button>`).join('')}</div></div>
+  <div class="grid">${sel.map(card).join('')||'<div class="muted" style="grid-column:1/-1;padding:20px;text-align:center">Nada que mostrar con este filtro.</div>'}</div>`;
+}
+function vProg(){
+  const s=stats(list),col=pc(s.p);
+  const owned=list.filter(x=>have(x.id)).map(x=>({...x,d:data.owned[x.id].date||''})).sort((a,b)=>a.d<b.d?-1:1);
+  const th=[10,25,50,75].filter(n=>n<s.t);th.push(s.t);
+  const meds=th.map(n=>{const ok=s.o>=n&&n>0,d=ok?owned[n-1]?.d:'';return `<div class="med"><b class="${ok?'g':''}">${n===s.t?'★':n}</b>${n===s.t?'Completa':'Medalla'}<br>${ok?fdate(d):'Pendiente'}</div>`}).join('');
+  const sg=sagas().map(g=>{const q=stats(list.filter(x=>x.saga===g));return `<div style="margin-bottom:10px;font-size:13px"><div class="row"><span>${esc(g)}</span><b style="color:${pc(q.p)}">${q.o} de ${q.t} · ${q.p}%</b></div><div class="bar" style="margin-top:4px"><i style="width:${q.p}%;background:${pc(q.p)}"></i></div></div>`}).join('');
+  const yrs={};owned.forEach(x=>{const[y,m]=(x.d||'0000-00').split('-');((yrs[y]??={})[m]??=[]).push(x)});
+  const hist=Object.keys(yrs).sort().reverse().map(y=>`<details><summary><span>${y==='0000'?'Sin fecha':y}</span><b>${Object.values(yrs[y]).flat().length}</b></summary>${Object.keys(yrs[y]).sort().reverse().map(m=>`<details style="margin-left:10px"><summary><span>${m==='00'?'—':MES[+m-1]}</span><b>${yrs[y][m].length}</b></summary>${yrs[y][m].map(x=>`<div class="li"><span>N.º ${x.n} ${esc(x.name)}</span><span>${fdate(x.d)}</span></div>`).join('')}</details>`).join('')}</details>`).join('')||'<div class="muted">Aún no marcas ningún amiibo.</div>';
+  return `<div class="card"><div class="ct">${svg('chart',18)}Mi progreso</div><div class="row" style="margin-bottom:8px"><div class="big" style="color:${col}">${s.p}%</div><div class="muted">${s.o} de ${s.t}</div></div><div class="bar"><i style="width:${s.p}%;background:${col}"></i></div></div>
+  <div class="card"><div class="ct">${svg('chart',18)}Avance por saga</div>${sg}</div>
+  <div class="card"><div class="ct">${svg('medal',18)}Logros</div><div class="row" style="align-items:flex-start;flex-wrap:wrap">${meds}</div></div>
+  <div class="card"><div class="ct">${svg('cal',18)}Historial de capturas</div>${hist}</div>`;
+}
+function vResp(){
+  return `<div class="card"><div class="ct">${svg('save',18)}Respaldo</div>
+  <p class="muted">Versión ${VERSION}. Tus datos se guardan en este dispositivo.</p>
+  <button class="btn" data-act="expJson">Exportar respaldo (JSON)</button>
+  <button class="btn alt" data-act="expCsv">Exportar para Excel (CSV)</button>
+  <button class="btn alt" data-act="impBtn">Importar respaldo (JSON)</button>
+  <input type="file" id="imp" accept=".json,application/json" hidden></div>`;
+}
+function vModal(){
+  if(!modal)return'';
+  if(modal.t==='lock')return `<div class="modal"><div class="box"><h2>¿Empezar a editar?</h2><p class="muted">Podrás marcar y desmarcar amiibo hasta que toques "Terminar edición".</p><button class="btn" data-act="lockYes">Sí, editar</button><button class="btn alt" data-act="close">No</button></div></div>`;
+  const a=list.find(x=>x.id===modal.id);if(!a)return'';
+  const o=data.owned[a.id];
+  return `<div class="modal"><div class="box"><button class="x" data-act="close">✕</button><h2 style="padding-right:40px">${esc(a.name)}</h2>
+  <img class="big-img" src="${esc(imgOf(a))}" onerror="this.onerror=null;this.src='${PH}'" alt="">
+  <p class="muted" style="margin-top:10px">N.º ${a.n} · Saga: ${esc(a.saga)}${a.rel?' · Lanzamiento: '+esc(fdate(a.rel)):''}</p>
+  <p style="margin-top:8px;font-weight:700;color:${o?'#1a9a4a':'#6b6b78'}">${o?'Lo tengo':'Me falta'}</p>
+  ${o?(unlocked?`<label class="muted">Fecha de obtención</label><input class="inp" type="date" value="${o.date||''}" data-act="date" data-id="${a.id}">`:`<p class="muted">Obtenido: ${fdate(o.date)||'sin fecha'}</p>`):''}
+  ${unlocked?`<button class="btn" data-act="tg" data-id="${a.id}">${o?'Quitar de mi colección':'Marcar que lo tengo'}</button><button class="btn alt" data-act="photo" data-id="${a.id}">Subir foto propia</button>${data.photos[a.id]?`<button class="btn alt" data-act="nophoto" data-id="${a.id}">Quitar foto propia</button>`:''}<input type="file" id="ph" accept="image/*" hidden>`:''}
+  <a class="btn alt" target="_blank" rel="noopener" href="https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent('amiibo '+a.name)}">Buscar en eBay</a></div></div>`;
+}
+function render(){
+  const y=window.scrollY;
+  let body='';
+  if(status==='loading')body='<div class="card">Cargando amiibo…</div>';
+  else if(status==='error')body=`<div class="card"><p class="err">No pude cargar la lista de amiibo. Revisa tu conexión.</p><p class="muted">Detalle: ${esc(errMsg)}</p><button class="btn" data-act="retry">Reintentar</button></div>`;
+  else body=(status==='cache'?'<div class="card muted">Sin conexión: mostrando la última lista guardada.</div>':'')+(tab==='lista'?vLista():tab==='prog'?vProg():vResp());
+  if(tab==='resp'&&status!=='loading'&&status!=='error')body=vResp();
+  document.getElementById('app').innerHTML=`<div class="top"><div><h1>Amiibo Smash</h1><small>${VERSION}</small></div><button class="lockbtn" data-act="lock" aria-label="Candado">${svg(unlocked?'lockO':'lockC',32)}</button></div>
+  ${unlocked?'<div class="editbar"><span>Modo edición</span><button data-act="lockOff">Terminar edición</button></div>':''}
+  <div class="wrap">${body}</div>
+  <div class="tabs">${[['lista','Lista','list'],['prog','Progreso','chart'],['resp','Respaldo','save']].map(([k,l,i])=>`<button class="${tab===k?'on':''}" data-act="tab" data-v="${k}">${svg(i,22)}${l}</button>`).join('')}</div>${vModal()}`;
+  window.scrollTo(0,y);
+  const q=document.querySelector('[data-act=q]');if(q&&document.activeElement.dataset?.focusQ){}
+}
+
+/* ---------- Eventos ---------- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]');if(!t)return;
+  const act=t.dataset.act,id=t.dataset.id;
+  if(act==='q'||act==='saga'||act==='date')return;
+  if(act==='tab'){tab=t.dataset.v;window.scrollTo(0,0)}
+  else if(act==='mode')f.mode=t.dataset.v;
+  else if(act==='lock'){if(unlocked)unlocked=false;else modal={t:'lock'}}
+  else if(act==='lockYes'){unlocked=true;modal=null}
+  else if(act==='lockOff')unlocked=false;
+  else if(act==='close')modal=null;
+  else if(act==='retry'){load();return}
+  else if(act==='info'){e.stopPropagation();modal={t:'ficha',id}}
+  else if(act==='card'){
+    if(unlocked)toggle(id);
+    else{const n=Date.now();if(lastTap[id]&&n-lastTap[id]<350){modal={t:'ficha',id};lastTap[id]=0}else lastTap[id]=n;}
+  }
+  else if(act==='tg'){toggle(id)}
+  else if(act==='nophoto'){delete data.photos[id];save()}
+  else if(act==='photo'){document.getElementById('ph').onchange=ev=>{const file=ev.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);data.photos[id]=c.toDataURL('image/jpeg',.8);save();render()};im.src=r.result};r.readAsDataURL(file)};document.getElementById('ph').click();return}
+  else if(act==='expJson')dl('amiibo-smash-respaldo.json',JSON.stringify(data),'application/json');
+  else if(act==='expCsv'){const rows=[['N.º','Nombre','Saga','Lo tengo','Fecha de obtención']].concat(list.map(x=>[x.n,x.name,x.saga,have(x.id)?'Sí':'No',data.owned[x.id]?.date||'']));dl('amiibo-smash.csv','﻿'+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\n'),'text/csv')}
+  else if(act==='impBtn'){const i=document.getElementById('imp');i.onchange=ev=>{const file=ev.target.files[0];if(!file)return;file.text().then(tx=>{try{const d=JSON.parse(tx);if(!d.owned)throw 0;data={owned:d.owned,photos:d.photos||{}};save();alert('Respaldo importado.');render()}catch(_){alert('Ese archivo no es un respaldo válido.')}})};i.click();return}
+  render();
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.dataset.act==='saga'){f.saga=t.value;render()}
+  else if(t.dataset.act==='date'){if(data.owned[t.dataset.id]){data.owned[t.dataset.id].date=t.value;save()}}
+});
+document.addEventListener('input',e=>{
+  if(e.target.dataset.act==='q'){f.q=e.target.value;const p=e.target.selectionStart;render();const q=document.querySelector('[data-act=q]');q.focus();q.setSelectionRange(p,p)}
+});
+function dl(name,txt,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click()}
+document.getElementById('spv').textContent='Versión '+VERSION.replace('beta ','');
+setTimeout(()=>{const e=document.getElementById('splash');e.style.opacity=0;setTimeout(()=>e.remove(),450)},1200);
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+load();
+</script></body></html>
