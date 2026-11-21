@@ -55,7 +55,7 @@ details{border-top:1px solid #eee;padding:8px 0}summary{font-weight:600;display:
 <div id="splash"><img src="icon-192.png" alt=""><h1>Amiibo Smash</h1><p id="spv"></p></div>
 <div id="app"></div>
 <script>
-const VERSION='beta 0.2';
+const VERSION='beta 0.3';
 const KEY='amiibo-smash-data',LKEY='amiibo-smash-list';
 const PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 70"><ellipse cx="30" cy="64" rx="22" ry="5" fill="#ccc"/><circle cx="30" cy="16" r="11" fill="#a9a9ba"/><rect x="18" y="28" width="24" height="30" rx="9" fill="#bdbdcc"/></svg>');
 let data={owned:{},photos:{}};
@@ -79,9 +79,9 @@ const IC={
 const svg=(n,s=20)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24">${IC[n]}</svg>`;
 
 /* ---------- Datos ---------- */
-function normalize(raw){
-  let a=raw.filter(x=>!x.type||x.type==='Figure').map(x=>({id:x.head+x.tail,name:x.name,saga:x.gameSeries||'Otras',img:x.image,rel:(x.release&&(x.release.na||x.release.eu||x.release.jp||x.release.au))||''}));
-  a.sort((p,q)=>p.id<q.id?-1:1);
+const DATA=[["0000000000000002","Mario","Super Mario","2014-11-21"],["0002000000010002","Peach","Super Mario","2014-11-21"],["0003000000020002","Yoshi","Super Mario","2014-11-21"],["0008000000030002","Donkey Kong","Super Mario","2014-11-21"],["0100000000040002","Link","The Legend of Zelda","2014-11-21"],["0580000000050002","Fox","Star Fox","2014-11-21"],["05c0000000060002","Samus","Metroid","2014-11-21"],["0700000000070002","Wii Fit Trainer","Wii Fit","2014-11-21"],["0180000000080002","Villager","Animal Crossing","2014-11-21"],["1919000000090002","Pikachu","Pokémon","2014-11-21"],["1f000000000a0002","Kirby","Kirby","2014-11-21"],["21000000000b0002","Marth","Fire Emblem","2014-11-21"],["00010000000c0002","Luigi","Super Mario","2014-12-14"],["00090000000d0002","Diddy Kong","Super Mario","2014-12-14"],["01010000000e0002","Zelda","The Legend of Zelda","2014-12-14"],["06c00000000f0002","Little Mac","Punch-Out!!","2014-12-14"],["0740000000100002","Pit","Kid Icarus","2014-12-14"],["1ac0000000110002","Lucario","Pokémon","2015-02-01"],["0600000000120002","Captain Falcon","F-Zero","2014-12-14"],["0004010000130002","Rosalina & Luma","Super Mario","2015-02-01"],["0005000000140002","Bowser","Super Mario","2015-02-01"],["0006000000150002","Bowser Jr.","Super Mario","2015-09-11"],["0100010000160002","Toon Link","The Legend of Zelda","2015-02-01"],["0101010000170002","Sheik","The Legend of Zelda","2015-02-01"],["2101000000180002","Ike","Fire Emblem","2015-02-01"],["0000010000190002","Dr. Mario","Super Mario","2015-09-11"],["00070000001a0002","Wario","Super Mario","2015-05-29"],["01020100001b0002","Ganondorf","The Legend of Zelda","2015-09-11"],["05810000001c0002","Falco","Star Fox","2015-11-20"],["05c00100001d0002","Zero Suit Samus","Metroid","2015-09-11"],["06400100001e0002","Olimar","Pikmin","2015-09-11"],["07420000001f0002","Palutena","Kid Icarus","2015-07-24"],["0741000000200002","Dark Pit","Kid Icarus","2015-07-31"],["07c0000000210002","Mii Brawler","Mii","2015-11-01"],["07c0010000220002","Mii Swordfighter","Mii","2015-11-01"],["07c0020000230002","Mii Gunner","Mii","2015-11-01"],["1906000000240002","Charizard","Pokémon","2015-05-29"],["1b92000000250002","Greninja","Pokémon","2015-05-29"],["1927000000260002","Jigglypuff","Pokémon","2015-05-29"],["1f01000000270002","Meta Knight","Kirby","2015-02-01"],["1f02000000280002","King Dedede","Kirby","2015-02-01"],["2102000000290002","Lucina","Fire Emblem","2015-05-29"],["21030000002a0002","Robin","Fire Emblem","2015-05-29"],["22400000002b0002","Shulk","Xenoblade","2015-02-01"],["22800000002c0002","Ness","EarthBound","2015-05-29"],["07800000002d0002","Mr. Game & Watch","Clásicos de Nintendo","2015-09-25"],["07810000002e0002","R.O.B. - Famicom","Clásicos de Nintendo","2016-03-18"],["07820000002f0002","Duck Hunt","Clásicos de Nintendo","2015-09-25"],["3200000000300002","Sonic","Sonic","2015-02-01"],["3480000000310002","Mega Man","Mega Man","2015-02-01"],["3340000000320002","Pac-Man","Pac-Man","2015-05-29"],["0781000000330002","R.O.B. - NES","Clásicos de Nintendo","2015-09-25"],["19960000023d0002","Mewtwo","Pokémon","2015-11-13"],["2281000002510002","Lucas","EarthBound","2016-01-30"],["2104000002520002","Roy","Fire Emblem","2016-03-18"],["34c0000002530002","Ryu","Street Fighter","2016-03-18"],["3480000002580002","Mega Man - Gold Edition","Mega Man","2016-02-23"],["3600000002590002","Cloud","Final Fantasy","2017-07-21"],["21050000025a0002","Corrin","Fire Emblem","2017-07-21"],["32400000025b0002","Bayonetta","Bayonetta","2017-07-21"],["3600010003620002","Cloud - Player 2","Final Fantasy","2017-07-21"],["2105010003630002","Corrin - Player 2","Fire Emblem","2017-07-21"],["3240010003640002","Bayonetta - Player 2","Bayonetta","2017-07-21"],["00130000037a0002","Daisy","Super Mario","2019-04-12"],["00c00000037b0002","King K. Rool","Donkey Kong","2019-02-15"],["01000000037c0002","Young Link","The Legend of Zelda","2019-04-12"],["01810000037d0002","Isabelle","Animal Crossing","2019-07-26"],["05840000037e0002","Wolf","Star Fox","2018-12-07"],["05c20000037f0002","Ridley","Metroid","2018-12-07"],["05c3000003800002","Dark Samus","Metroid","2020-01-17"],["078f000003810002","Ice Climbers","Clásicos de Nintendo","2019-02-15"],["0800010003820002","Inkling","Splatoon","2018-12-07"],["1902000003830002","Ivysaur","Pokémon","2019-09-20"],["1907000003840002","Squirtle","Pokémon","2019-09-20"],["19ac000003850002","Pichu","Pokémon","2019-07-19"],["1bd7000003860002","Incineroar","Pokémon","2019-11-15"],["1d40000003870002","Pokemon Trainer","Pokémon","2019-07-26"],["2108000003880002","Chrom","Fire Emblem","2019-11-15"],["34c1000003890002","Ken","Street Fighter","2019-04-12"],["37800000038a0002","Snake","Metal Gear","2019-09-20"],["37c00000038b0002","Simon","Castlevania","2019-11-15"],["37c10000038c0002","Richter","Castlevania","2020-01-17"],["00240000038d0002","Piranha Plant","Super Mario","2019-02-15"],["3a00000003a10002","Joker","Persona","2020-10-02"],["3640000003a20002","Hero","Dragon Quest","2020-10-05"],["3b40000003a30002","Banjo & Kazooie","Banjo-Kazooie","2021-03-26"],["3c80000003a40002","Terry","Fatal Fury","2021-03-26"],["210b000003a50002","Byleth","Fire Emblem","2021-03-26"],["0a400000041d0002","Min Min","ARMS","2022-04-29"],["22410000041e0002","Pyra","Xenoblade","2023-07-21"],["22420000041f0002","Mythra","Xenoblade","2023-07-21"],["33c0000004200002","Kazuya","Tekken","2023-01-13"],["3601000004210002","Sephiroth","Final Fantasy","2023-01-13"],["3dc0000004220002","Steve","Minecraft","2022-09-09"],["3dc1000004230002","Alex","Minecraft","2022-09-09"],["3f000000042e0002","Sora","Kingdom Hearts","2024-02-16"]];
+function normalize(arr){
+  let a=arr.map(x=>({id:x[0],name:x[1],saga:x[2],rel:x[3],img:'https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/images/icon_'+x[0].slice(0,8)+'-'+x[0].slice(8)+'.png'}));
   const gw=a.filter(x=>/game\s*&\s*watch/i.test(x.name));
   if(gw.length===1){
     const g=gw[0],i=a.indexOf(g);
@@ -90,22 +90,8 @@ function normalize(raw){
   }
   return a.map((x,i)=>({...x,n:i+1}));
 }
-async function load(){
-  status='loading';render();
-  try{
-    const r=await fetch('https://www.amiiboapi.com/api/amiibo/?amiiboSeries=Super%20Smash%20Bros.');
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const j=await r.json();
-    list=normalize(j.amiibo);
-    try{localStorage.setItem(LKEY,JSON.stringify(j.amiibo))}catch(e){}
-    status='ok';
-  }catch(e){
-    errMsg=String(e&&e.message||e);
-    try{const c=JSON.parse(localStorage.getItem(LKEY)||'null');if(c){list=normalize(c);status='cache';render();return}}catch(_){}
-    status='error';
-  }
-  render();
-}
+function load(){list=normalize(DATA);status='ok';render()}
+function imgErr(el){el.dataset.fail='1';el.src=PH}
 
 /* ---------- Helpers ---------- */
 const have=id=>!!data.owned[id];
@@ -118,7 +104,7 @@ function card(a){
   return `<div class="am ${o?'':'no'}" data-act="card" data-id="${a.id}">
   ${o?`<div class="ok">${svg('chk',14)}</div>`:''}
   ${unlocked?`<button class="info" data-act="info" data-id="${a.id}">i</button>`:''}
-  <img loading="lazy" src="${esc(imgOf(a))}" onerror="this.onerror=null;this.src='${PH}'" alt="">
+  <img loading="lazy" src="${esc(imgOf(a))}" data-src="${esc(imgOf(a))}" onerror="imgErr(this)" alt="">
   <div class="n">N.º ${a.n}${a.variant?' · V'+a.variant:''}</div><div class="nm">${esc(a.name)}</div></div>`;
 }
 
@@ -159,7 +145,7 @@ function vModal(){
   const a=list.find(x=>x.id===modal.id);if(!a)return'';
   const o=data.owned[a.id];
   return `<div class="modal"><div class="box"><button class="x" data-act="close">✕</button><h2 style="padding-right:40px">${esc(a.name)}</h2>
-  <img class="big-img" src="${esc(imgOf(a))}" onerror="this.onerror=null;this.src='${PH}'" alt="">
+  <img class="big-img" src="${esc(imgOf(a))}" data-src="${esc(imgOf(a))}" onerror="imgErr(this)" alt="">
   <p class="muted" style="margin-top:10px">N.º ${a.n} · Saga: ${esc(a.saga)}${a.rel?' · Lanzamiento: '+esc(fdate(a.rel)):''}</p>
   <p style="margin-top:8px;font-weight:700;color:${o?'#1a9a4a':'#6b6b78'}">${o?'Lo tengo':'Me falta'}</p>
   ${o?(unlocked?`<label class="muted">Fecha de obtención</label><input class="inp" type="date" value="${o.date||''}" data-act="date" data-id="${a.id}">`:`<p class="muted">Obtenido: ${fdate(o.date)||'sin fecha'}</p>`):''}
@@ -183,6 +169,8 @@ function render(){
 
 /* ---------- Eventos ---------- */
 document.addEventListener('click',e=>{
+  const im=e.target.closest('img[data-fail]');
+  if(im&&im.dataset.fail==='1'){im.dataset.fail='';im.src=im.dataset.src+(im.dataset.src.includes('?')?'&':'?')+'r='+Date.now();return}
   const t=e.target.closest('[data-act]');if(!t)return;
   const act=t.dataset.act,id=t.dataset.id;
   if(act==='q'||act==='saga'||act==='date')return;
