@@ -55,7 +55,7 @@ details{border-top:1px solid #eee;padding:8px 0}summary{font-weight:600;display:
 <div id="splash"><img src="icon-192.png" alt=""><h1>Amiibo Smash</h1><p id="spv"></p></div>
 <div id="app"></div>
 <script>
-const VERSION='beta 0.7';
+const VERSION='1.0';
 const KEY='amiibo-smash-data',LKEY='amiibo-smash-list';
 const PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 70"><ellipse cx="30" cy="64" rx="22" ry="5" fill="#ccc"/><circle cx="30" cy="16" r="11" fill="#a9a9ba"/><rect x="18" y="28" width="24" height="30" rx="9" fill="#bdbdcc"/></svg>');
 let data={owned:{},photos:{}};
@@ -161,7 +161,7 @@ function render(){
   else if(status==='error')body=`<div class="card"><p class="err">No pude cargar la lista de amiibo. Revisa tu conexión.</p><p class="muted">Detalle: ${esc(errMsg)}</p><button class="btn" data-act="retry">Reintentar</button></div>`;
   else body=(status==='cache'?'<div class="card muted">Sin conexión: mostrando la última lista guardada.</div>':'')+(tab==='lista'?vLista():tab==='prog'?vProg():vResp());
   if(tab==='resp'&&status!=='loading'&&status!=='error')body=vResp();
-  document.getElementById('app').innerHTML=`<div class="top"><div><h1>Amiibo Smash</h1><small>${VERSION}</small></div><button class="lockbtn" data-act="lock" aria-label="Candado">${svg(unlocked?'lockO':'lockC',32)}</button></div>
+  document.getElementById('app').innerHTML=`<div class="top"><div><h1>Amiibo Smash</h1><small>Versión ${VERSION}</small></div><button class="lockbtn" data-act="lock" aria-label="Candado">${svg(unlocked?'lockO':'lockC',32)}</button></div>
   ${unlocked?'<div class="editbar"><span>Modo edición</span><button data-act="lockOff">Terminar edición</button></div>':''}
   <div class="wrap">${body}</div>
   <div class="tabs">${[['lista','Lista','list'],['prog','Progreso','chart'],['resp','Respaldo','save']].map(([k,l,i])=>`<button class="${tab===k?'on':''}" data-act="tab" data-v="${k}">${svg(i,22)}${l}</button>`).join('')}</div>${vModal()}`;
@@ -205,7 +205,7 @@ document.addEventListener('input',e=>{
   if(e.target.dataset.act==='q'){f.q=e.target.value;const p=e.target.selectionStart;render();const q=document.querySelector('[data-act=q]');q.focus();q.setSelectionRange(p,p)}
 });
 function dl(name,txt,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click()}
-document.getElementById('spv').textContent='Versión '+VERSION.replace('beta ','');
+document.getElementById('spv').textContent='Versión '+VERSION;
 setTimeout(()=>{const e=document.getElementById('splash');e.style.opacity=0;setTimeout(()=>e.remove(),450)},1200);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 load();
