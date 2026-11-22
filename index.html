@@ -55,7 +55,7 @@ details{border-top:1px solid #eee;padding:8px 0}summary{font-weight:600;display:
 <div id="splash"><img src="icon-192.png" alt=""><h1>Amiibo Smash</h1><p id="spv"></p></div>
 <div id="app"></div>
 <script>
-const VERSION='1.0';
+const VERSION='1.1';
 const KEY='amiibo-smash-data',LKEY='amiibo-smash-list';
 const PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 70"><ellipse cx="30" cy="64" rx="22" ry="5" fill="#ccc"/><circle cx="30" cy="16" r="11" fill="#a9a9ba"/><rect x="18" y="28" width="24" height="30" rx="9" fill="#bdbdcc"/></svg>');
 let data={owned:{},photos:{}};
@@ -93,7 +93,26 @@ function normalize(arr){
   }
   return a.map((x,i)=>({...x,n:i+1}));
 }
-function load(){list=normalize(DATA);status='ok';render()}
+let EXTRA=[],news=[];
+try{EXTRA=JSON.parse(localStorage.getItem('amiibo-smash-extra')||'[]')}catch(e){}
+try{news=JSON.parse(localStorage.getItem('amiibo-smash-news')||'[]')}catch(e){}
+function load(){list=normalize(DATA.concat(EXTRA));status='ok';render();checkNew()}
+async function checkNew(){
+  if(!navigator.onLine)return;
+  try{
+    const c=new AbortController(),t=setTimeout(()=>c.abort(),10000);
+    const r=await fetch('https://raw.githubusercontent.com/N3evin/AmiiboAPI/master/database/amiibo.json',{signal:c.signal,cache:'no-cache'});
+    clearTimeout(t);if(!r.ok)return;
+    const am=(await r.json()).amiibos;if(!am)return;
+    const have=new Set(DATA.concat(EXTRA).map(x=>x[0]));
+    const keys=Object.keys(am).filter(k=>/^0x[0-9a-f]{16}$/i.test(k)&&k.slice(14,16)==='00'&&!have.has(k.slice(2).toLowerCase())&&am[k]&&am[k].name).sort((a,b)=>parseInt(a.slice(10,14),16)-parseInt(b.slice(10,14),16)).slice(0,30);
+    if(!keys.length)return;
+    const rows=keys.map(k=>{const r=am[k].release||{};return [k.slice(2).toLowerCase(),am[k].name,'Otras',r.na||r.eu||r.jp||r.au||'']});
+    EXTRA=EXTRA.concat(rows);news=news.concat(rows.map(x=>x[1]));
+    try{localStorage.setItem('amiibo-smash-extra',JSON.stringify(EXTRA));localStorage.setItem('amiibo-smash-news',JSON.stringify(news))}catch(e){}
+    list=normalize(DATA.concat(EXTRA));render();
+  }catch(e){}
+}
 function imgErr(el){el.dataset.fail='1';el.src=PH}
 
 /* ---------- Helpers ---------- */
@@ -115,8 +134,9 @@ function card(a){
 function vLista(){
   const s=stats(list),sel=list.filter(x=>(!f.saga||x.saga===f.saga)&&(f.mode==='all'||(f.mode==='have')===have(x.id))&&(!f.q||x.name.toLowerCase().includes(f.q.toLowerCase())));
   const sc=stats(f.saga?list.filter(x=>x.saga===f.saga):list),col=f.saga?pc(sc.p):'#1f6fe0';
+  const newsCard=news.length?`<div class="card"><b>Se agregaron ${news.length} amiibo nuevo${news.length>1?'s':''}</b><p class="muted" style="margin:6px 0">${news.map(esc).join(', ')}</p><button class="btn" data-act="newsOk">Entendido</button></div>`:'';
   const miss=f.mode==='miss',sub=`<span style="font-size:18px;color:#6b6b78;font-weight:600">de ${sc.t}</span>`;
-  return `<div class="card"><div class="row"><div><div class="muted">${miss?'Pendientes por conseguir':'Tengo'}</div><div class="big" style="color:${col}">${miss?sc.t-sc.o:sc.o} ${sub}</div></div>${miss?'':`<div class="big" style="color:${col}">${sc.p}%</div>`}</div></div>
+  return `${newsCard}<div class="card"><div class="row"><div><div class="muted">${miss?'Pendientes por conseguir':'Tengo'}</div><div class="big" style="color:${col}">${miss?sc.t-sc.o:sc.o} ${sub}</div></div>${miss?'':`<div class="big" style="color:${col}">${sc.p}%</div>`}</div></div>
   <div class="ctl"><select class="sel" data-act="saga"><option value="">Todas las sagas</option>${sagas().map(g=>`<option ${f.saga===g?'selected':''} value="${esc(g)}">${esc(g)}</option>`).join('')}</select>
   <input class="inp" style="margin-top:10px" placeholder="Buscar por nombre" value="${esc(f.q)}" data-act="q">
   <div class="chips">${[['all','Todos'],['have','Los tengo'],['miss','Me faltan']].map(([k,l])=>`<button class="chip ${f.mode===k?'on':''}" data-act="mode" data-v="${k}">${l}</button>`).join('')}</div></div>
@@ -188,6 +208,7 @@ document.addEventListener('click',e=>{
     if(unlocked)toggle(id);
     else{const n=Date.now();if(lastTap[id]&&n-lastTap[id]<350){modal={t:'ficha',id};lastTap[id]=0}else lastTap[id]=n;}
   }
+  else if(act==='newsOk'){news=[];try{localStorage.setItem('amiibo-smash-news','[]')}catch(_){}}
   else if(act==='tg'){toggle(id)}
   else if(act==='nophoto'){delete data.photos[id];save()}
   else if(act==='photo'){document.getElementById('ph').onchange=ev=>{const file=ev.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);data.photos[id]=c.toDataURL('image/jpeg',.8);save();render()};im.src=r.result};r.readAsDataURL(file)};document.getElementById('ph').click();return}
