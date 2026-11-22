@@ -55,7 +55,7 @@ details{border-top:1px solid #eee;padding:8px 0}summary{font-weight:600;display:
 <div id="splash"><img src="icon-192.png" alt=""><h1>Amiibo Smash</h1><p id="spv"></p></div>
 <div id="app"></div>
 <script>
-const VERSION='1.1';
+const VERSION='1.2';
 const KEY='amiibo-smash-data',LKEY='amiibo-smash-list';
 const PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 70"><ellipse cx="30" cy="64" rx="22" ry="5" fill="#ccc"/><circle cx="30" cy="16" r="11" fill="#a9a9ba"/><rect x="18" y="28" width="24" height="30" rx="9" fill="#bdbdcc"/></svg>');
 let data={owned:{},photos:{}};
@@ -92,6 +92,15 @@ function normalize(arr){
     a.splice(i,1,...v);
   }
   return a.map((x,i)=>({...x,n:i+1}));
+}
+let snap=null;
+function endEdit(){
+  unlocked=false;
+  if(snap!==null&&JSON.stringify(data)!==snap){
+    const before=JSON.parse(snap).owned||{};
+    modal={t:'backup',add:Object.keys(data.owned).filter(k=>!before[k]).length,rem:Object.keys(before).filter(k=>!data.owned[k]).length};
+  }
+  snap=null;
 }
 let EXTRA=[],news=[];
 try{EXTRA=JSON.parse(localStorage.getItem('amiibo-smash-extra')||'[]')}catch(e){}
@@ -163,6 +172,7 @@ function vResp(){
 }
 function vModal(){
   if(!modal)return'';
+  if(modal.t==='backup'){const p=[modal.add?`agregaste ${modal.add}`:'',modal.rem?`quitaste ${modal.rem}`:''].filter(Boolean);return `<div class="modal"><div class="box"><h2>Edición terminada</h2><p class="muted">${p.length?'En esta edición '+p.join(' y ')+'.':'Hiciste cambios en tus datos.'}</p><p style="margin-top:8px"><b>¿Quieres exportar un respaldo actualizado?</b></p><button class="btn" data-act="expBk">Exportar respaldo</button><button class="btn alt" data-act="close">Ahora no</button></div></div>`}
   if(modal.t==='lock')return `<div class="modal"><div class="box"><h2>¿Empezar a editar?</h2><p class="muted">Podrás marcar y desmarcar amiibo hasta que toques "Terminar edición".</p><button class="btn" data-act="lockYes">Sí, editar</button><button class="btn alt" data-act="close">No</button></div></div>`;
   const a=list.find(x=>x.id===modal.id);if(!a)return'';
   const o=data.owned[a.id];
@@ -198,9 +208,10 @@ document.addEventListener('click',e=>{
   if(act==='q'||act==='saga'||act==='date')return;
   if(act==='tab'){tab=t.dataset.v;window.scrollTo(0,0)}
   else if(act==='mode')f.mode=t.dataset.v;
-  else if(act==='lock'){if(unlocked)unlocked=false;else modal={t:'lock'}}
-  else if(act==='lockYes'){unlocked=true;modal=null}
-  else if(act==='lockOff')unlocked=false;
+  else if(act==='lock'){if(unlocked)endEdit();else modal={t:'lock'}}
+  else if(act==='lockYes'){unlocked=true;modal=null;snap=JSON.stringify(data)}
+  else if(act==='lockOff')endEdit();
+  else if(act==='expBk'){dl('amiibo-smash-respaldo.json',JSON.stringify(data),'application/json');modal=null}
   else if(act==='close')modal=null;
   else if(act==='retry'){load();return}
   else if(act==='info'){e.stopPropagation();modal={t:'ficha',id}}
