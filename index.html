@@ -55,7 +55,7 @@ details{border-top:1px solid #eee;padding:8px 0}summary{font-weight:600;display:
 <div id="splash"><img src="icon-192.png" alt=""><h1>Amiibo Smash</h1><p id="spv"></p></div>
 <div id="app"></div>
 <script>
-const VERSION='1.2';
+const VERSION='1.3';
 const KEY='amiibo-smash-data',LKEY='amiibo-smash-list';
 const PH='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 70"><ellipse cx="30" cy="64" rx="22" ry="5" fill="#ccc"/><circle cx="30" cy="16" r="11" fill="#a9a9ba"/><rect x="18" y="28" width="24" height="30" rx="9" fill="#bdbdcc"/></svg>');
 let data={owned:{},photos:{}};
@@ -173,6 +173,7 @@ function vResp(){
 function vModal(){
   if(!modal)return'';
   if(modal.t==='backup'){const p=[modal.add?`agregaste ${modal.add}`:'',modal.rem?`quitaste ${modal.rem}`:''].filter(Boolean);return `<div class="modal"><div class="box"><h2>Edición terminada</h2><p class="muted">${p.length?'En esta edición '+p.join(' y ')+'.':'Hiciste cambios en tus datos.'}</p><p style="margin-top:8px"><b>¿Quieres exportar un respaldo actualizado?</b></p><button class="btn" data-act="expBk">Exportar respaldo</button><button class="btn alt" data-act="close">Ahora no</button></div></div>`}
+  if(modal.t==='imp'){const q=stats(list);return `<div class="modal"><div class="box"><h2>Respaldo importado</h2><p class="muted">Esto es lo que quedó en tu colección:</p><div class="row" style="margin:12px 0"><div><div class="muted">Tengo</div><div class="big" style="color:${pc(q.p)}">${q.o} <span style="font-size:18px;color:#6b6b78;font-weight:600">de ${q.t}</span></div></div><div class="big" style="color:${pc(q.p)}">${q.p}%</div></div><p><b>Pendientes por conseguir: ${q.t-q.o}</b></p><button class="btn" data-act="close">Entendido</button></div></div>`}
   if(modal.t==='lock')return `<div class="modal"><div class="box"><h2>¿Empezar a editar?</h2><p class="muted">Podrás marcar y desmarcar amiibo hasta que toques "Terminar edición".</p><button class="btn" data-act="lockYes">Sí, editar</button><button class="btn alt" data-act="close">No</button></div></div>`;
   const a=list.find(x=>x.id===modal.id);if(!a)return'';
   const o=data.owned[a.id];
@@ -225,7 +226,7 @@ document.addEventListener('click',e=>{
   else if(act==='photo'){document.getElementById('ph').onchange=ev=>{const file=ev.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);data.photos[id]=c.toDataURL('image/jpeg',.8);save();render()};im.src=r.result};r.readAsDataURL(file)};document.getElementById('ph').click();return}
   else if(act==='expJson')dl('amiibo-smash-respaldo.json',JSON.stringify(data),'application/json');
   else if(act==='expCsv'){const rows=[['N.º','Nombre','Saga','Lo tengo','Fecha de obtención']].concat(list.map(x=>[x.n,x.name,x.saga,have(x.id)?'Sí':'No',data.owned[x.id]?.date||'']));dl('amiibo-smash.csv','﻿'+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\n'),'text/csv')}
-  else if(act==='impBtn'){const i=document.getElementById('imp');i.onchange=ev=>{const file=ev.target.files[0];if(!file)return;file.text().then(tx=>{try{const d=JSON.parse(tx);if(!d.owned)throw 0;data={owned:d.owned,photos:d.photos||{}};save();alert('Respaldo importado.');render()}catch(_){alert('Ese archivo no es un respaldo válido.')}})};i.click();return}
+  else if(act==='impBtn'){const i=document.getElementById('imp');i.onchange=ev=>{const file=ev.target.files[0];if(!file)return;file.text().then(tx=>{try{const d=JSON.parse(tx);if(!d.owned)throw 0;data={owned:d.owned,photos:d.photos||{}};save();modal={t:'imp'};render()}catch(_){alert('Ese archivo no es un respaldo válido.')}})};i.click();return}
   render();
 });
 document.addEventListener('change',e=>{
